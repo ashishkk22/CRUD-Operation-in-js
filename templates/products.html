@@ -1,0 +1,96 @@
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit the Product</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-of-product">
+          <div class="mb-3">
+            <label class="col-form-label">Product Id:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="id"
+              placeholder="Enter the Product Id"
+            />
+            <small id="id-error" class="form-text text-danger d-none"
+              >Please enter the 5-20 characters id.</small
+            >
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Product Name:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              placeholder="Enter the Product Name"
+            />
+            <small id="name-error" class="form-text text-danger d-none"
+              >Please enter the valid name.</small
+            >
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Product Price:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="price"
+              placeholder="Enter the Product Price"
+            />
+            <small id="price-error" class="form-text text-danger d-none"
+              >Please enter the product price.</small
+            >
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Product Image:</label>
+            <textarea
+              class="form-control"
+              id="imgUrl"
+              placeholder="Enter the Image Url"
+            ></textarea>
+            <small id="img-error" class="form-text text-danger d-none"
+              >Please enter the valid url.</small
+            >
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Product Description:</label>
+            <textarea
+              class="form-control"
+              id="description"
+              placeholder="Enter the Product Description"
+            ></textarea>
+            <small id="description-error" class="form-text text-danger d-none"
+              >Please enter the 10-200 characters description.</small
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          id="close-btn"
+        >
+          Close
+        </button>
+        <button type="button" class="btn btn-dark" id="update-the-product">
+          Update the Product
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

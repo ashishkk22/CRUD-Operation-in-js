@@ -1,215 +1,197 @@
-// const addMovieModal = document.getElementById("add-modal");
+import {
+  setValueInLocal,
+  getValueFromLocal,
+  productObj,
+  validateAndGetData,
+  showTheAlertMsg,
+} from "./functions.js";
 
-// // const addMovieModal = document.querySelector('add-model'); // above and this expression are same
+const pageTitle = "Product Management System";
 
-// const startAddMovieButton = document.querySelector("header button"); // or
-// // const startAddMovieButton = document.querySelector('header').lastElementChild;
+//position of edit btn to find the main from the path with event
+const positionOfEditBtn = 3;
 
-// const backdrop = document.getElementById("backdrop");
-
-// const cancelAddMovieButton = addMovieModal.querySelector(".btn--passive");
-// const confirmAddMovieButton = cancelAddMovieButton.nextElementSibling;
-// const userInputs = addMovieModal.querySelectorAll("input");
-
-// const entryTextSection = document.getElementById("entry-text");
-// const deleteMovieModal = document.getElementById("delete-modal");
-
-// const movies = [];
-
-// const updateUI = () => {
-//   if (movies.length === 0) {
-//   } else {
-//     entryTextSection.style.display = "none";
-//   }
-// };
-
-// const deleteMovie = movieId => {
-//   let movieIndex = 0;
-//   for (const movie of movies) {
-//     if (movie.id === movieId) {
-//       break;
-//     }
-//     movieIndex++;
-//   }
-//   console.log(movieIndex);
-//   movies.splice(movieIndex, 1);
-//   const listRoot = document.getElementById("movie-list");
-//   listRoot.children[movieIndex].remove();
-//   // listRoot.removeChild(listRoot.children[movieIndex]);
-// };
-
-// const closeMovieDeletionModal = () => {
-//   toggleBackDrop();
-//   deleteMovieModal.classList.remove("visible");
-// };
-
-// const deleteMovieHandler = movieId => {
-//   deleteMovieModal.classList.add("visible");
-//   toggleBackDrop();
-//   deleteMovie(movieId);
-// };
-
-// const renderNewMovieElement = ({ id, title, imageUrl, rating }) => {
-//   const newMovieElement = document.createElement("li");
-//   newMovieElement.className = "movie-element";
-//   newMovieElement.innerHTML = `
-//         <div class="movie-element__image"><img src="${imageUrl}" alt="${title}"/></div>
-//         <div class="movie-element__info"><h2>${title}</h2> <p>${rating}/5 stars</p></div>
-//     `;
-//   newMovieElement.addEventListener("click", deleteMovieHandler.bind(null, id));
-//   const listRoot = document.getElementById("movie-list");
-//   listRoot.append(newMovieElement);
-// };
-
-// const toggleBackDrop = () => {
-//   backdrop.classList.toggle("visible");
-// };
-
-// const closeMovieModal = () => {
-//   addMovieModal.classList.remove("visible");
-// };
-
-// const showMovieModal = () => {
-//   addMovieModal.classList.add("visible");
-//   toggleBackDrop();
-// };
-
-// const backdropClickHandler = () => {
-//   closeMovieModal();
-//   closeMovieDeletionModal();
-// };
-
-// const clearMovieInput = () => {
-//   for (const userInput of userInputs) {
-//     userInput.value = "";
-//   }
-// };
-
-// const cancelAddMovieHandler = () => {
-//   closeMovieModal();
-//   clearMovieInput();
-// };
-
-// const addMovieHandler = () => {
-//   const titleValue = userInputs[0].value;
-//   const imageUrlValue = userInputs[1].value;
-//   const ratingValue = userInputs[2].value;
-
-//   if (
-//     titleValue.trim() === "" || //it removes the empty space from the string
-//     imageUrlValue.trim() === "" ||
-//     ratingValue.trim() === "" ||
-//     +ratingValue < 1 ||
-//     +ratingValue > 5
-//   ) {
-//     alert("Please enter the valid values (rating between 1 and 5).");
-//     clearMovieInput();
-//     return;
-//   }
-
-//   const newMovie = {
-//     id: Math.random().toString(),
-//     title: titleValue,
-//     image: imageUrlValue,
-//     rating: ratingValue,
-//   };
-//   movies.push(newMovie);
-//   closeMovieModal();
-//   toggleBackDrop();
-//   clearMovieInput();
-//   updateUI();
-//   renderNewMovieElement(newMovie);
-// };
-
-// startAddMovieButton.addEventListener("click", showMovieModal);
-// backdrop.addEventListener("click", backdropClickHandler);
-// cancelAddMovieButton.addEventListener("click", cancelAddMovieHandler);
-// confirmAddMovieButton.addEventListener("click", addMovieHandler);
-
-// const inputs = document.querySelectorAll("input");
-
-// const patterns = {
-//   username: /^[a-z\d]{5,12}$/i,
-//   password: /^[\d\w@-]{8,20}$/i,
-//   email: /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/,
-//   phone: /^\d{3}-\d{3}-\d{4}$/,
-// };
-
-// inputs.forEach(input => {
-//   input.addEventListener("keyup", e => {
-//     validate(e.target, patterns[e.target.attributes.id.value]);
-//   });
-// });
-
-// function validate(field, regex) {
-//   if (regex.test(field.value)) {
-//     field.className = "form-control valid";
-//   } else {
-//     field.className = "form-control invalid";
-//   }
-// }
-
-// let productId = document.getElementById("product-id");
-// let productName = document.getElementById("product-name");
-// let productImage = document.getElementById("product-image");
-// let productDescription = document.getElementById("product-image");
-
-const regexPatterns = {
-  id: /^[1-9][0-9]{4,20}$/,
-  name: /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-\s]{2,}$/,
-  imgUrl: /^([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))$/,
-  description: /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-\s]{10,200}$/,
+// object with template location and title
+const routes = {
+  "/": {
+    template: "/templates/index.html",
+    title: "Home | " + pageTitle,
+  },
+  products: {
+    template: "/templates/products.html",
+    title: "products | " + pageTitle,
+  },
+  addProduct: {
+    template: "/templates/addProduct.html",
+    title: "Add Product | " + pageTitle,
+  },
+  404: {
+    template: "/templates/404.html",
+    title: "404 not found | " + pageTitle,
+  },
 };
 
-let submitFormBtn = document.getElementById("submit-form");
-submitFormBtn.addEventListener("click", () => {
-  const dataObj = {};
-  let validationErr = false;
-  const formElements = document.querySelector("form").elements;
-  for (const elem of formElements) {
-    const regex = regexPatterns[elem.id];
-    if (regex.test(elem.value)) {
-      dataObj[elem.id] = elem.value;
-    } else {
-      validationErr = false; //do something
-      showErrorInTheForm(elem);
+// watch the hash and call the fn
+window.addEventListener("hashchange", locationHandler);
+locationHandler();
+
+function locationHandler() {
+  var location = window.location.hash.replace("#", "");
+  //if length 0 then main route
+  if (location.length == 0) {
+    location = "/";
+  }
+  // route object from routes
+  const route = routes[location] || routes["404"];
+
+  // set the page title
+  document.title = route.title;
+
+  // get the html from the template
+  if (location == "/") {
+    mainRoute(route);
+  } else if (location == "products") {
+    productsRoute(route);
+  } else if (location == "addProduct") {
+    productRoute(route);
+  } else if (location) {
+    notFoundRoute(route);
+  }
+}
+
+// ============================================ //
+
+async function mainRoute(route) {
+  const html = await fetch(route.template).then(response => response.text());
+  document.getElementById("root").innerHTML = html;
+}
+
+async function productsRoute(route) {
+  const html = await fetch(route.template).then(response => response.text());
+  let root = document.getElementById("root");
+  root.innerHTML = html;
+
+  let initialHtml;
+
+  let previousData = getValueFromLocal("products");
+
+  if (previousData === "") {
+    // previousData = JSON.parse(dataFromLocal)?.products;
+    // console.log(previousData);
+    initialHtml = `<p class="text-center m-5">You don't have any Products to view, Please add it !</p>`;
+    root.insertAdjacentHTML("beforeend", initialHtml);
+    return;
+  }
+
+  initialHtml = `<div class="d-flex  flex-wrap" id="cards-of-product"></div>`;
+  root.insertAdjacentHTML("beforeend", initialHtml);
+
+  let innerHTMLFromData = previousData?.map(obj => {
+    const { description, id, imgUrl, name, price } = obj;
+    return `<div class="card border-1 m-3 view__card--size" id="${id}">
+    <img
+      src="${imgUrl}"
+      class="img-fluid m-2 img-card" 
+      alt="${name}"
+    />
+    <div class="card-body">
+      <p class="id-card"># ${id}</p>
+      <h5 class="card-title name-card">${name}</h5>
+      <p class="card-text description-card">
+        ${description}
+      </p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item price-card">Price: ${price}</li>
+      <li class="list-group-item d-flex justify-content-between">
+      <button class="btn btn-dark edit-btns" data-bs-toggle="modal"
+  data-bs-target="#exampleModal" >Edit Product</button>
+      <button class="btn btn-danger">Delete</button>
+      </li>
+    </ul> 
+  </div>`;
+  });
+
+  let cardDiv = document.getElementById("cards-of-product");
+  if (innerHTMLFromData !== undefined) {
+    for (const i of innerHTMLFromData) {
+      cardDiv.insertAdjacentHTML("beforeend", i);
     }
   }
-  console.log("after vlidaton");
-  if (validationErr) {
-    console.log("insidethe if");
-    dataValidation(dataObj);
-  }
-});
+  //all the edit btn of products
+  let allTheEditBtns = document.querySelectorAll(".edit-btns");
 
-function dataValidation(dataObj) {
-  console.log("hiii", dataObj);
+  //adding listener to every edit btn of card
+  allTheEditBtns.forEach(box =>
+    box.addEventListener("click", e => {
+      //getting the main card div with btn parent
+      let targetCardDiv = e.composedPath()[positionOfEditBtn];
+
+      //getting the all details
+      let imgLink = targetCardDiv.querySelector(".img-card").src;
+      let id = targetCardDiv.querySelector(".id-card").innerText;
+      id = id.substr(2, id.length);
+      let name = targetCardDiv.querySelector(".name-card").innerText;
+      let description =
+        targetCardDiv.querySelector(".description-card").innerText;
+      let price = targetCardDiv.querySelector(".price-card").innerText;
+      price = price.substr(7, price.length);
+
+      //set the value in the modal (form)
+      document.getElementById("id").value = id;
+      document.getElementById("id").disabled = true;
+      document.getElementById("imgUrl").value = imgLink;
+      document.getElementById("name").value = name;
+      document.getElementById("description").value = description;
+      document.getElementById("price").value = price;
+    })
+  );
+  const form = document.querySelector("form");
+  let editProduct = document.getElementById("update-the-product");
+  editProduct.addEventListener("click", () => {
+    const formElements = document.querySelector("form").elements;
+    const dataObj = validateAndGetData(formElements);
+    if (dataObj !== undefined) {
+      let dataFromLocal = getValueFromLocal("products");
+      const newData = dataFromLocal.map(obj => {
+        return obj.id === dataObj.id ? dataObj : obj;
+      });
+      productObj.products = newData;
+      setValueInLocal("products", productObj);
+      form.reset();
+      // const myModal = bootstrap.Modal.getOrCreateInstance("#exampleModal");
+      // myModal.hide();
+      setTimeout(() => {
+        document.getElementById("close-btn").click();
+      }, 400);
+    }
+  });
 }
 
-function showErrorInTheForm(idOfInput) {
-  switch (idOfInput.id) {
-    case "id":
-      console.log("in the id");
-      showTheErrorEle("id-error");
-      break;
-    case "name":
-      showTheErrorEle("name-error");
-      break;
-    case "imgUrl":
-      showTheErrorEle("img-error");
-      break;
-    case "description":
-      showTheErrorEle("description-error");
-      break;
-    default:
-      console.log("default");
-  }
+async function productRoute(route) {
+  const html = await fetch(route.template).then(response => response.text());
+
+  // set the content of the content div to the html
+  document.getElementById("root").innerHTML = html;
+  let submitFormBtn = document.getElementById("submit-form");
+  let form = document.querySelector("form");
+
+  submitFormBtn?.addEventListener("click", () => {
+    const formElements = document.querySelector("form").elements;
+    const dataObj = validateAndGetData(formElements);
+    if (dataObj !== undefined) {
+      productObj.products.push(dataObj);
+      setValueInLocal("products", productObj);
+      form.reset();
+      let successMsg = document.getElementById("action-alert");
+      showTheAlertMsg(successMsg, "A Product added successfully !!");
+    }
+  });
 }
 
-function showTheErrorEle(id) {
-  const errEle = document.getElementById(id);
-  errEle.classList.remove("d-none");
-  setTimeout(() => {
-    errEle.classList.add("d-none");
-  }, 5000);
+async function notFoundRoute(route) {
+  const html = await fetch(route.template).then(response => response.text());
+
+  // set the content of the content div to the html
+  document.getElementById("root").innerHTML = html;
 }
