@@ -4,6 +4,7 @@ import {
   productObj,
   validateAndGetData,
   showTheAlertMsg,
+  addCardsInDiv,
 } from "./functions.js";
 
 const pageTitle = "Product Management System";
@@ -75,7 +76,7 @@ async function productsRoute(route) {
 
   let previousData = getValueFromLocal("products");
 
-  if (previousData === "") {
+  if (previousData === undefined) {
     // previousData = JSON.parse(dataFromLocal)?.products;
     // console.log(previousData);
     initialHtml = `<p class="text-center m-5">You don't have any Products to view, Please add it !</p>`;
@@ -85,39 +86,8 @@ async function productsRoute(route) {
 
   initialHtml = `<div class="d-flex  flex-wrap" id="cards-of-product"></div>`;
   root.insertAdjacentHTML("beforeend", initialHtml);
+  addCardsInDiv(previousData, "cards-of-product");
 
-  let innerHTMLFromData = previousData?.map(obj => {
-    const { description, id, imgUrl, name, price } = obj;
-    return `<div class="card border-1 m-3 view__card--size" id="${id}">
-    <img
-      src="${imgUrl}"
-      class="img-fluid m-2 img-card" 
-      alt="${name}"
-    />
-    <div class="card-body">
-      <p class="id-card"># ${id}</p>
-      <h5 class="card-title name-card">${name}</h5>
-      <p class="card-text description-card">
-        ${description}
-      </p>
-    </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item price-card">Price: ${price}</li>
-      <li class="list-group-item d-flex justify-content-between">
-      <button class="btn btn-dark edit-btns" data-bs-toggle="modal"
-  data-bs-target="#exampleModal" >Edit Product</button>
-      <button class="btn btn-danger">Delete</button>
-      </li>
-    </ul> 
-  </div>`;
-  });
-
-  let cardDiv = document.getElementById("cards-of-product");
-  if (innerHTMLFromData !== undefined) {
-    for (const i of innerHTMLFromData) {
-      cardDiv.insertAdjacentHTML("beforeend", i);
-    }
-  }
   //all the edit btn of products
   let allTheEditBtns = document.querySelectorAll(".edit-btns");
 
@@ -159,8 +129,7 @@ async function productsRoute(route) {
       productObj.products = newData;
       setValueInLocal("products", productObj);
       form.reset();
-      // const myModal = bootstrap.Modal.getOrCreateInstance("#exampleModal");
-      // myModal.hide();
+      addCardsInDiv(newData, "cards-of-product");
       setTimeout(() => {
         document.getElementById("close-btn").click();
       }, 400);

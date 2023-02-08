@@ -33,7 +33,7 @@ function showTheErrorEle(id) {
   const errEle = document.getElementById(id);
   errEle?.classList.remove("d-none");
   setTimeout(() => {
-    errEle.classList.add("d-none");
+    errEle?.classList.add("d-none");
   }, 5000);
 }
 
@@ -61,5 +61,42 @@ export function getValueFromLocal(key) {
     let dataFromLocal = localStorage.getItem(key);
     dataFromLocal = JSON.parse(dataFromLocal)?.products;
     return dataFromLocal;
+  }
+}
+
+export function addCardsInDiv(data, divId) {
+  let arrOfEle = data?.map(obj => {
+    const { description, id, imgUrl, name, price } = obj;
+    return `<div class="card border-1 m-3 view__card--size" id="${id}">
+    <img
+      src="${imgUrl}"
+      class="img-fluid m-2 img-card" 
+      alt="${name}"
+    />
+    <div class="card-body">
+      <p class="id-card"># ${id}</p>
+      <h5 class="card-title name-card">${name}</h5>
+      <p class="card-text description-card">
+        ${description}
+      </p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item price-card">Price: ${price}</li>
+      <li class="list-group-item d-flex justify-content-between">
+      <button class="btn btn-dark edit-btns" data-bs-toggle="modal"
+  data-bs-target="#exampleModal" >Edit Product</button>
+      <button class="btn btn-danger">Delete</button>
+      </li>
+    </ul> 
+  </div>`;
+  });
+
+  let cardDiv = document.getElementById(divId);
+  cardDiv.innerText = "";
+
+  if (arrOfEle !== undefined) {
+    for (const i of arrOfEle) {
+      cardDiv.insertAdjacentHTML("beforeend", i);
+    }
   }
 }
