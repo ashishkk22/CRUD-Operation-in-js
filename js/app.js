@@ -5,12 +5,11 @@ import {
   validateAndGetData,
   showTheAlertMsg,
   addCardsInDiv,
+  dataExtractFromCards,
+  selectObj,
 } from "./functions.js";
 
 const pageTitle = "Product Management System";
-
-//position of edit btn to find the main from the path with event
-const positionOfEditBtn = 3;
 
 // object with template location and title
 const routes = {
@@ -67,7 +66,8 @@ async function mainRoute(route) {
   document.getElementById("root").innerHTML = html;
 }
 
-async function productsRoute(route) {
+async function productsRoute(route, filter = 0, sort = 0) {
+  console.log("hiii rendered");
   const html = await fetch(route.template).then(response => response.text());
   let root = document.getElementById("root");
   root.innerHTML = html;
@@ -75,8 +75,8 @@ async function productsRoute(route) {
   let initialHtml;
 
   let previousData = getValueFromLocal("products");
-
-  if (previousData === undefined) {
+  console.log(previousData);
+  if (previousData.length === 0) {
     // previousData = JSON.parse(dataFromLocal)?.products;
     // console.log(previousData);
     initialHtml = `<p class="text-center m-5">You don't have any Products to view, Please add it !</p>`;
@@ -84,28 +84,51 @@ async function productsRoute(route) {
     return;
   }
 
-  initialHtml = `<div class="d-flex  flex-wrap" id="cards-of-product"></div>`;
+  initialHtml = `<div class="controls d-flex flex-column flex-md-row w-100 gap-2">
+  <div class="d-flex gap-1 justify-content-center align-content-center p-2">
+    <label class="m-2 text-nowrap">Filter :</label>
+    <select
+      class="form-select"
+      aria-label="Default select example"
+      id="filter-select"
+    >
+      <option selected value="id" >Id</option>
+      <option value="price">Price</option>
+      <option value="name">Name</option>
+    </select>
+  </div>
+  <div class="d-flex gap-1 justify-content-center align-content-center p-2">
+    <label class="m-2 text-nowrap">Sort By:</label>
+    <select
+      class="form-select select-picker"
+      aria-label="Default select example"
+    >
+      <option selected>Asc</option>
+      <option value="1">des</option>
+    </select>
+  </div>
+</div>
+<div class="d-flex  flex-wrap" id="cards-of-product"></div>`;
   root.insertAdjacentHTML("beforeend", initialHtml);
+
   addCardsInDiv(previousData, "cards-of-product");
+  const sectionFilter = document.getElementById("filter-select");
+  sectionFilter.selectedIndex = selectObj[sectionFilter.value];
+  sectionFilter.addEventListener("change", e => {
+    // if (e.target= e.currentTarget) {
+    console.log(e.target.value);
+    console.log(selectObj[e.target.value]);
 
-  //all the edit btn of products
-  let allTheEditBtns = document.querySelectorAll(".edit-btns");
+    // for(previousData)
+    // }
+    // console.log("clicked");
+  });
 
-  //adding listener to every edit btn of card
-  allTheEditBtns.forEach(box =>
-    box.addEventListener("click", e => {
-      //getting the main card div with btn parent
-      let targetCardDiv = e.composedPath()[positionOfEditBtn];
-
-      //getting the all details
-      let imgLink = targetCardDiv.querySelector(".img-card").src;
-      let id = targetCardDiv.querySelector(".id-card").innerText;
-      id = id.substr(2, id.length);
-      let name = targetCardDiv.querySelector(".name-card").innerText;
-      let description =
-        targetCardDiv.querySelector(".description-card").innerText;
-      let price = targetCardDiv.querySelector(".price-card").innerText;
-      price = price.substr(7, price.length);
+  let wholeDiv = document.getElementById("cards-of-product");
+  wholeDiv.addEventListener("click", e => {
+    //to edit the products
+    if (e.target.classList.contains("edit-btns")) {
+      const [id, name, imgLink, description, price] = dataExtractFromCards(e);
 
       //set the value in the modal (form)
       document.getElementById("id").value = id;
@@ -114,8 +137,26 @@ async function productsRoute(route) {
       document.getElementById("name").value = name;
       document.getElementById("description").value = description;
       document.getElementById("price").value = price;
-    })
-  );
+    } //to delete the product
+    else if (e.target.classList.contains("delete-btns")) {
+      //getting the card data from extractor fn
+      const [id] = dataExtractFromCards(e);
+      let dataFromLocal = getValueFromLocal("products");
+      const newData = dataFromLocal.filter(obj => {
+        return obj.id !== id;
+      });
+      productObj.products = newData;
+      setValueInLocal("products", productObj);
+      let deleteMsg = document.getElementById("action-alert");
+      showTheAlertMsg(
+        deleteMsg,
+        "A Product Deleted Successfully !!",
+        "alert-danger"
+      );
+      productsRoute(route);
+    }
+  });
+
   const form = document.querySelector("form");
   let editProduct = document.getElementById("update-the-product");
   editProduct.addEventListener("click", () => {
@@ -130,9 +171,11 @@ async function productsRoute(route) {
       setValueInLocal("products", productObj);
       form.reset();
       addCardsInDiv(newData, "cards-of-product");
+
       setTimeout(() => {
         document.getElementById("close-btn").click();
-      }, 400);
+        productsRoute(route);
+      }, 200);
     }
   });
 }
@@ -153,7 +196,11 @@ async function productRoute(route) {
       setValueInLocal("products", productObj);
       form.reset();
       let successMsg = document.getElementById("action-alert");
-      showTheAlertMsg(successMsg, "A Product added successfully !!");
+      showTheAlertMsg(
+        successMsg,
+        "A Product added successfully !!",
+        "alert-success"
+      );
     }
   });
 }

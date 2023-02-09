@@ -2,9 +2,19 @@ const regexPatterns = {
   id: /^[1-9][0-9]{4,20}$/,
   name: /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-\s]{2,}$/,
   price: /^[0-9]{1,}$/,
-  imgUrl: /^([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif))/i,
+  imgUrl: /^([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif|svg))/i,
   description: /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-\s]{10,200}$/,
 };
+
+export let selectObj = {
+  id: 0,
+  name: 1,
+  price: 2,
+};
+
+//position of edit btn to find the main from the path with event
+const positionOfEditBtn = 3;
+
 let dataFromLocal = getValueFromLocal("products");
 
 export let productObj = {
@@ -37,13 +47,15 @@ function showTheErrorEle(id) {
   }, 5000);
 }
 
-export function showTheAlertMsg(element, msg) {
+export function showTheAlertMsg(element, msg, typeOfEvent) {
   element.innerText = msg;
+  element.classList.add(typeOfEvent);
   element.classList.remove("collapse");
   setTimeout(() => {
     element.classList.add("collapse");
   }, 5000);
 }
+
 //==== local storage related fn ==== //
 
 //set and get the data from the local storage
@@ -85,7 +97,7 @@ export function addCardsInDiv(data, divId) {
       <li class="list-group-item d-flex justify-content-between">
       <button class="btn btn-dark edit-btns" data-bs-toggle="modal"
   data-bs-target="#exampleModal" >Edit Product</button>
-      <button class="btn btn-danger">Delete</button>
+      <button class="btn btn-danger delete-btns">Delete</button>
       </li>
     </ul> 
   </div>`;
@@ -100,3 +112,25 @@ export function addCardsInDiv(data, divId) {
     }
   }
 }
+
+export function dataExtractFromCards(e) {
+  //getting the main card div with btn parent
+  let targetCardDiv = e.composedPath()[positionOfEditBtn];
+
+  //getting the all details
+  let imgLink = targetCardDiv.querySelector(".img-card").src;
+
+  let id = targetCardDiv.querySelector(".id-card").innerText;
+  id = id.substr(2, id.length);
+
+  let name = targetCardDiv.querySelector(".name-card").innerText;
+
+  let description = targetCardDiv.querySelector(".description-card").innerText;
+
+  let price = targetCardDiv.querySelector(".price-card").innerText;
+  price = price.substr(7, price.length);
+
+  return [id, name, imgLink, description, price];
+}
+
+export function sortTheData(data, key) {}
