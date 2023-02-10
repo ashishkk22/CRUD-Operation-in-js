@@ -2,25 +2,20 @@ const regexPatterns = {
   id: /^[1-9][0-9]{4,20}$/,
   name: /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-\s]{2,}$/,
   price: /^[0-9]{1,}$/,
-  imgUrl: /^([a-z\-_0-9\/\:\.]*\.(jpg|jpeg|png|gif|svg))/i,
+  imgUrl: /^([a-z\-_0-9\/\:\.,]*\.(jpg|jpeg|png|gif|svg))/i,
   description: /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-\s]{10,200}$/,
-};
-
-export let selectObj = {
-  id: 0,
-  name: 1,
-  price: 2,
 };
 
 //position of edit btn to find the main from the path with event
 const positionOfEditBtn = 3;
 
+//getting the data from local and setting in the obj
 let dataFromLocal = getValueFromLocal("products");
-
 export let productObj = {
   products: dataFromLocal ?? [],
 };
 
+//validate and send the data if no error or send error
 export function validateAndGetData(formElements) {
   const dataObj = {};
   let flagForValidation = 0;
@@ -39,6 +34,7 @@ export function validateAndGetData(formElements) {
   return;
 }
 
+//show the error in the page with show hide
 function showTheErrorEle(id) {
   const errEle = document.getElementById(id);
   errEle?.classList.remove("d-none");
@@ -47,11 +43,13 @@ function showTheErrorEle(id) {
   }, 5000);
 }
 
+//alert after operation (delete or edit or add)
 export function showTheAlertMsg(element, msg, typeOfEvent) {
   element.innerText = msg;
   element.classList.add(typeOfEvent);
   element.classList.remove("collapse");
   setTimeout(() => {
+    element.classList.remove(typeOfEvent);
     element.classList.add("collapse");
   }, 5000);
 }
@@ -76,6 +74,7 @@ export function getValueFromLocal(key) {
   }
 }
 
+//iterate with data and set the html in the target div with ID
 export function addCardsInDiv(data, divId) {
   let arrOfEle = data?.map(obj => {
     const { description, id, imgUrl, name, price } = obj;
@@ -113,11 +112,12 @@ export function addCardsInDiv(data, divId) {
   }
 }
 
+//data getter with event from targeted card
 export function dataExtractFromCards(e) {
   //getting the main card div with btn parent
   let targetCardDiv = e.composedPath()[positionOfEditBtn];
 
-  //getting the all details
+  //getting the all details imgLink, id, name, description, price
   let imgLink = targetCardDiv.querySelector(".img-card").src;
 
   let id = targetCardDiv.querySelector(".id-card").innerText;
@@ -133,4 +133,23 @@ export function dataExtractFromCards(e) {
   return [id, name, imgLink, description, price];
 }
 
-export function sortTheData(data, key) {}
+//sorting fn with combo of sortBy and Filter value
+export function sortAndFilterData(data, filter, sortBy) {
+  //checking asc or des
+  if (sortBy === "asc") {
+    data.sort((obj1, obj2) => {
+      if (filter === "name") {
+        return obj2[filter].charCodeAt(0) - obj1[filter].charCodeAt(0);
+      }
+      return obj1[filter] - obj2[filter];
+    });
+  } else {
+    data.sort((obj1, obj2) => {
+      if (filter === "name") {
+        return obj1[filter].charCodeAt(0) - obj2[filter].charCodeAt(0);
+      }
+      return obj2[filter] - obj1[filter];
+    });
+  }
+  return data;
+}
