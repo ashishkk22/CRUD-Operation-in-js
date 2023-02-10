@@ -80,7 +80,7 @@ async function productsRoute(route) {
 
   //getting data from local and checking empty or not
   let previousData = getValueFromLocal("products");
-  if (previousData.length === 0 || previousData === undefined) {
+  if (previousData?.length === 0 || previousData === undefined) {
     initialHtml = `<p class="text-center m-5">You don't have any Products to view, Please add products !</p>`;
     root.insertAdjacentHTML("beforeend", initialHtml);
     return;
