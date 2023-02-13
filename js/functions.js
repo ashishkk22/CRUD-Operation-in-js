@@ -139,14 +139,20 @@ export function sortAndFilterData(data, filter, sortBy) {
   if (sortBy === "asc") {
     data.sort((obj1, obj2) => {
       if (filter === "name") {
-        return obj2[filter].charCodeAt(0) - obj1[filter].charCodeAt(0);
+        return obj2[filter].charAt(0).toLowerCase() <
+          obj1[filter].charAt(0).toLowerCase()
+          ? 1
+          : -1;
       }
       return obj1[filter] - obj2[filter];
     });
-  } else {
+  } else if (sortBy === "des") {
     data.sort((obj1, obj2) => {
       if (filter === "name") {
-        return obj1[filter].charCodeAt(0) - obj2[filter].charCodeAt(0);
+        return obj2[filter].charAt(0).toLowerCase() <
+          obj1[filter].charAt(0).toLowerCase()
+          ? -1
+          : 1;
       }
       return obj2[filter] - obj1[filter];
     });
