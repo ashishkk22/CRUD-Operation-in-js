@@ -37,9 +37,9 @@ locationHandler();
 
 //called on every location change
 function locationHandler() {
-  var location = window.location.hash.replace("#", "");
+  let location = window.location.hash.replace("#", "");
   //if length 0 then main route
-  if (location.length == 0) {
+  if (location.length === 0) {
     location = "/";
   }
   // route object from routes
@@ -49,11 +49,11 @@ function locationHandler() {
   document.title = route.title;
 
   // get the html from the template
-  if (location == "/") {
+  if (location === "/") {
     mainRoute(route);
-  } else if (location == "products") {
+  } else if (location === "products") {
     productsRoute(route);
-  } else if (location == "addProduct") {
+  } else if (location === "addProduct") {
     addProductRoute(route);
   } else if (location) {
     notFoundRoute(route);
@@ -61,7 +61,9 @@ function locationHandler() {
 }
 
 // ============================================ //
-
+function generator() {
+  return "CRUD" + new Date().getTime() + "-";
+}
 //main page fn
 async function mainRoute(route) {
   const html = await fetch(route.template).then(response => response.text());
@@ -73,34 +75,37 @@ async function productsRoute(route) {
   const html = await fetch(route.template).then(response => response.text());
 
   //setting fetched html in the root div
-  let root = document.getElementById("root");
+  const root = document.getElementById("root");
   root.innerHTML = html;
 
   let initialHtml;
 
   //getting data from local and checking empty or not
   let previousData = getValueFromLocal("products");
-  if (previousData?.length === 0 || previousData === undefined) {
+  if (previousData?.length === 0 || previousData == undefined) {
     initialHtml = `<p class="text-center m-5">You don't have any Products to view, Please add products !</p>`;
     root.insertAdjacentHTML("beforeend", initialHtml);
     return;
   }
 
-  initialHtml = `<div class="d-flex  flex-wrap justify-content-center" id="cards-of-product"></div>`;
+  //generating the uuid so if no references pointing to div on calling the mainRoute() recursively then the garbage collector will collects the previous events
+  const uuid = generator() + "card-of-product";
+
+  initialHtml = `<div class="d-flex  flex-wrap justify-content-center" id=${uuid}></div>`;
 
   //adding the div in root
   root.insertAdjacentHTML("beforeend", initialHtml);
 
   //adding the card in the above added div
-  addCardsInDiv(previousData, "cards-of-product");
+  addCardsInDiv(previousData, uuid);
 
   //selecting the from, update product and filter elements to perform the operations
   const form = document.querySelector("form");
-  let editProduct = document.getElementById("update-the-product");
+  const editProduct = document.getElementById("update-the-product");
   const selectionFilter = document.getElementById("filter-select");
-  let selectionSortBy = document.getElementById("sortBy-select");
-  let searchField = document.getElementById("search-field");
-  let wholeDiv = document.getElementById("cards-of-product");
+  const selectionSortBy = document.getElementById("sortBy-select");
+  const searchField = document.getElementById("search-field");
+  const wholeDiv = document.getElementById(uuid);
 
   //obj to decide the how data to be filtered
   let objShow = {
@@ -130,7 +135,7 @@ async function productsRoute(route) {
     //new fn with debounce
     const cardRelatedOperationDebounce = myDebounce(objShow => {
       cardRelatedOperation(objShow);
-    }, 1500);
+    }, 800);
     cardRelatedOperationDebounce(objShow);
   });
 
@@ -154,8 +159,8 @@ async function productsRoute(route) {
     }
 
     //new data based on the selection (filter & sortBy) and updating in main div
-    let newData = sortAndFilterData(previousData, filter, sortBy);
-    addCardsInDiv(newData, "cards-of-product");
+    const newData = sortAndFilterData(previousData, filter, sortBy);
+    addCardsInDiv(newData, uuid);
 
     //adding listener to whole div (EVENT DELEGATION)
     wholeDiv.addEventListener("click", e => {
@@ -176,7 +181,7 @@ async function productsRoute(route) {
       else if (e.target.classList.contains("delete-btns")) {
         //getting the card data from extractor fn
         const [id] = dataExtractFromCards(e);
-        let dataFromLocal = getValueFromLocal("products");
+        const dataFromLocal = getValueFromLocal("products");
 
         //data filter based on the id
         const newData = dataFromLocal.filter(obj => {
@@ -186,7 +191,7 @@ async function productsRoute(route) {
         setValueInLocal("products", productObj);
 
         //alert on the operation
-        let deleteMsg = document.getElementById("action-alert");
+        const deleteMsg = document.getElementById("action-alert");
         showTheAlertMsg(
           deleteMsg,
           "A Product Deleted Successfully !!",
@@ -202,8 +207,8 @@ async function productsRoute(route) {
       const formElements = document.querySelector("form").elements;
       const dataObj = validateAndGetData(formElements);
 
-      if (dataObj !== undefined) {
-        let dataFromLocal = getValueFromLocal("products");
+      if (dataObj != undefined) {
+        const dataFromLocal = getValueFromLocal("products");
 
         //swapping the old object with new object based on the id
         const newData = dataFromLocal.map(obj => {
@@ -212,11 +217,17 @@ async function productsRoute(route) {
         productObj.products = newData;
         setValueInLocal("products", productObj);
         form.reset();
-        addCardsInDiv(newData, "cards-of-product");
+        addCardsInDiv(newData, uuid);
 
         setTimeout(() => {
           document.getElementById("close-btn").click();
           productsRoute(route);
+          const updateMsg = document.getElementById("action-alert");
+          showTheAlertMsg(
+            updateMsg,
+            "A Product Updated Successfully !!",
+            "alert-success"
+          );
         }, 200);
       }
     });
@@ -229,19 +240,19 @@ async function addProductRoute(route) {
 
   // set the content of the content div to the html
   document.getElementById("root").innerHTML = html;
-  let submitFormBtn = document.getElementById("submit-form");
-  let form = document.querySelector("form");
+  const submitFormBtn = document.getElementById("submit-form");
+  const form = document.querySelector("form");
 
   //addedProduct submit btn
   submitFormBtn?.addEventListener("click", () => {
     const formElements = document.querySelector("form").elements;
     const dataObj = validateAndGetData(formElements);
-    if (dataObj !== undefined) {
+    if (dataObj != undefined) {
       //pushing in the array of object
       productObj.products.push(dataObj);
       setValueInLocal("products", productObj);
       form.reset();
-      let successMsg = document.getElementById("action-alert");
+      const successMsg = document.getElementById("action-alert");
       showTheAlertMsg(
         successMsg,
         "A Product added successfully !!",
