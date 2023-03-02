@@ -136,8 +136,8 @@ export function dataExtractFromCards(e) {
 //sorting fn with combo of sortBy and Filter value
 export function sortAndFilterData(data, filter, sortBy) {
   //checking asc or des
-  if (sortBy === "asc") {
-    data.sort((obj1, obj2) => {
+  data.sort((obj1, obj2) => {
+    if (sortBy === "asc") {
       if (filter === "name") {
         return obj2[filter].charAt(0).toLowerCase() <
           obj1[filter].charAt(0).toLowerCase()
@@ -145,9 +145,7 @@ export function sortAndFilterData(data, filter, sortBy) {
           : -1;
       }
       return obj1[filter] - obj2[filter];
-    });
-  } else if (sortBy === "des") {
-    data.sort((obj1, obj2) => {
+    } else if (sortBy === "des") {
       if (filter === "name") {
         return obj2[filter].charAt(0).toLowerCase() <
           obj1[filter].charAt(0).toLowerCase()
@@ -155,7 +153,7 @@ export function sortAndFilterData(data, filter, sortBy) {
           : 1;
       }
       return obj2[filter] - obj1[filter];
-    });
-  }
+    }
+  });
   return data;
 }
