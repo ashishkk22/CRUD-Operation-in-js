@@ -1,0 +1,63 @@
+<div class="m-lg-5 m-3">
+  <form id="form-of-product">
+    <div class="mb-3">
+      <label class="col-form-label">Product Id:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="id"
+        placeholder="Enter the Product Id"
+      />
+      <small id="id-error" class="form-text text-danger d-none"
+        >Please enter the 5-20 numbers id.</small
+      >
+    </div>
+    <div class="mb-3">
+      <label class="col-form-label">Product Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Enter the Product Name"
+      />
+      <small id="name-error" class="form-text text-danger d-none"
+        >Please enter the valid name.</small
+      >
+    </div>
+    <div class="mb-3">
+      <label class="col-form-label">Product Price:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="price"
+        placeholder="Enter the Product Price"
+      />
+      <small id="price-error" class="form-text text-danger d-none"
+        >Please enter the product price.</small
+      >
+    </div>
+    <div class="mb-3">
+      <label class="col-form-label">Product Image:</label>
+      <textarea
+        class="form-control"
+        id="imgUrl"
+        placeholder="Enter the Image Url"
+      ></textarea>
+      <small id="imgUrl-error" class="form-text text-danger d-none"
+        >Please enter the valid url.</small
+      >
+    </div>
+    <div class="mb-3">
+      <label class="col-form-label">Product Description:</label>
+      <textarea
+        class="form-control"
+        id="description"
+        placeholder="Enter the Product Description"
+      ></textarea>
+      <small id="description-error" class="form-text text-danger d-none"
+        >Please enter the 10-200 characters description.</small
+      >
+    </div>
+  </form>
+  <button id="submit-form" class="btn btn-dark">Add Product</button>
+</div>
